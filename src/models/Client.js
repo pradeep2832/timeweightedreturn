@@ -15,7 +15,37 @@ class Client {
     }
 
     addTransaction(transaction) {
+        // Validate transaction
+        if (!transaction || !transaction.type) {
+            throw new Error('Invalid transaction');
+        }
+
+        // Add transaction to client's transaction history
         this.transactions.push(transaction);
+
+        // Handle transaction based on type
+        switch (transaction.type) {
+            case 'DEPOSIT':
+                this.handleDeposit(transaction);
+                break;
+            case 'BUY':
+                this.handleBuy(transaction);
+                break;
+            case 'SELL':
+                this.handleSell(transaction);
+                break;
+            case 'DIVIDEND':
+                this.handleDividend(transaction);
+                break;
+            case 'SPENDING_FUND_DEPOSIT':
+                this.handleSpendingFundDeposit(transaction);
+                break;
+            default:
+                throw new Error(`Unsupported transaction type: ${transaction.type}`);
+        }
+
+        // Rebalance all spending funds after any transaction
+        this.rebalanceSpendingFunds();
     }
 
     addSecurity(security) {
@@ -116,32 +146,43 @@ class Client {
     }
 
     rebalanceSpendingFunds() {
-        const rebalancingTransactions = [];
-        
-        for (const fund of this.spendingFunds) {
-            const rebalance = fund.rebalance();
-            if (rebalance) {
-                const transaction = rebalance.type === 'REBALANCE_UP' 
-                    ? Transaction.createRebalanceUpTransaction(
-                        Date.now().toString(),
-                        new Date(),
-                        fund.id,
-                        rebalance.amount
-                    )
-                    : Transaction.createRebalanceDownTransaction(
-                        Date.now().toString(),
-                        new Date(),
-                        fund.id,
-                        rebalance.amount
-                    );
-                
-                this.addTransaction(transaction);
-                fund.addTransaction(transaction);
-                rebalancingTransactions.push(transaction);
+        // Rebalance each spending fund
+        this.spendingFunds.forEach(fund => {
+            try {
+                fund.rebalance();
+            } catch (error) {
+                console.error(`Error rebalancing fund ${fund.name}:`, error);
             }
-        }
+        });
+    }
 
-        return rebalancingTransactions;
+    handleDeposit(transaction) {
+        // Handle deposit transaction
+        console.log(`Processing deposit of $${transaction.amount}`);
+    }
+
+    handleBuy(transaction) {
+        // Handle buy transaction
+        console.log(`Processing buy of ${transaction.quantity} shares of ${transaction.securityId}`);
+    }
+
+    handleSell(transaction) {
+        // Handle sell transaction
+        console.log(`Processing sell of ${transaction.quantity} shares of ${transaction.securityId}`);
+    }
+
+    handleDividend(transaction) {
+        // Handle dividend transaction
+        console.log(`Processing dividend of $${transaction.amount} from ${transaction.securityId}`);
+    }
+
+    handleSpendingFundDeposit(transaction) {
+        // Handle spending fund deposit
+        const fund = this.spendingFunds.find(f => f.id === transaction.spendingFundId);
+        if (fund) {
+            fund.deposit(transaction.amount);
+            console.log(`Processing spending fund deposit of $${transaction.amount} to ${fund.name}`);
+        }
     }
 
     toJSON() {

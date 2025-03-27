@@ -45,37 +45,42 @@ class SpendingFund {
     }
 
     rebalance() {
-        const currentCashRatio = this.cashAmount / this.currentBalance;
+        const currentCashPercentage = this.cashAmount / this.currentBalance;
         let rebalanceAmount = 0;
 
-        if (currentCashRatio > this.maxCashAllocation) {
-            // Too much cash, invest the excess
-            const targetCash = this.currentBalance * this.cashAllocation;
-            rebalanceAmount = this.cashAmount - targetCash;
-            this.cashAmount = targetCash;
+        // Check if rebalancing is needed
+        if (currentCashPercentage > this.maxCashAllocation) {
+            // Too much cash, need to invest more
+            rebalanceAmount = this.cashAmount - (this.currentBalance * this.cashAllocation);
+            this.cashAmount -= rebalanceAmount;
             this.investedAmount += rebalanceAmount;
-            this.transactions.push({
-                type: 'REBALANCE_DOWN',
-                amount: -rebalanceAmount,
-                date: new Date(),
-                cashAllocation: this.cashAmount,
-                investedAllocation: this.investedAmount
-            });
-        } else if (currentCashRatio < this.minCashAllocation) {
-            // Too little cash, sell investments
-            const targetCash = this.currentBalance * this.cashAllocation;
-            rebalanceAmount = targetCash - this.cashAmount;
-            this.cashAmount = targetCash;
+            
+            // Log rebalancing action
+            console.log(`${this.name} rebalancing: Moving $${rebalanceAmount.toFixed(2)} from cash to investments`);
+        } else if (currentCashPercentage < this.minCashAllocation) {
+            // Too little cash, need to sell investments
+            rebalanceAmount = (this.currentBalance * this.cashAllocation) - this.cashAmount;
+            this.cashAmount += rebalanceAmount;
             this.investedAmount -= rebalanceAmount;
-            this.transactions.push({
-                type: 'REBALANCE_UP',
-                amount: rebalanceAmount,
-                date: new Date(),
-                cashAllocation: this.cashAmount,
-                investedAllocation: this.investedAmount
-            });
+            
+            // Log rebalancing action
+            console.log(`${this.name} rebalancing: Moving $${rebalanceAmount.toFixed(2)} from investments to cash`);
         }
-        return rebalanceAmount;
+
+        // Add rebalancing transaction if any rebalancing occurred
+        if (rebalanceAmount !== 0) {
+            const transaction = {
+                id: Date.now().toString(),
+                date: new Date(),
+                type: rebalanceAmount > 0 ? 'REBALANCE_UP' : 'REBALANCE_DOWN',
+                amount: Math.abs(rebalanceAmount),
+                spendingFundId: this.id
+            };
+            this.addTransaction(transaction);
+            return transaction;
+        }
+
+        return null;
     }
 
     getBalance(date) {

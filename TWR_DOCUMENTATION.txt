@@ -11,83 +11,120 @@ Where:
 - Rₙ is the return for each sub-period
 - Each sub-period return is calculated as: R = (End Value - Start Value) / Start Value
 
+## Spending Fund Rebalancing
+The portfolio includes spending funds that maintain specific cash allocation targets:
+
+### Growth Fund
+- Target Cash Allocation: 20%
+- Minimum Cash: 10%
+- Maximum Cash: 30%
+- Rebalancing Logic:
+  ```
+  If cash > 30%: Move excess to investments
+  If cash < 10%: Sell investments to increase cash
+  ```
+
+### Income Fund
+- Target Cash Allocation: 40%
+- Minimum Cash: 30%
+- Maximum Cash: 50%
+- Rebalancing Logic:
+  ```
+  If cash > 50%: Move excess to investments
+  If cash < 30%: Sell investments to increase cash
+  ```
+
 ## Detailed Steps from Our Example
 
 ### 1. Initial Setup (January 1, 2023)
-- Initial Portfolio Value: $202,500
+- Initial Portfolio Value: $232,500
 - Initial Deposit: $150,000
-- First Sub-period Return: 0.7407 (74.07%)
+- Sub-period Return: 0.00%
   ```
-  R₁ = ($202,500 - $202,500 + $150,000) / $202,500 = 0.7407
+  R₁ = ($232,500 - $232,500) / $232,500 = 0.00
   ```
+- Upcoming Cash Flow: +$150,000 (Initial deposit)
 
 ### 2. AAPL Purchase (January 15, 2023)
-- Portfolio Value: $201,750
+- Portfolio Value: $231,750
 - Cash Flow: -$23,250 (150 shares × $155)
-- Sub-period Return: -0.1185 (-11.85%)
+- Sub-period Return: -39.41%
   ```
-  R₂ = ($201,750 - $202,500) / $202,500 = -0.1185
+  R₂ = ($231,750 - $382,500) / $382,500 = -0.3941
   ```
+- Upcoming Cash Flow: -$23,250 (AAPL purchase)
 
 ### 3. MSFT Purchase (February 1, 2023)
-- Portfolio Value: $202,125
+- Portfolio Value: $232,125
 - Cash Flow: -$22,125 (75 shares × $295)
-- Sub-period Return: -0.1078 (-10.78%)
+- Sub-period Return: +11.33%
   ```
-  R₃ = ($202,125 - $201,750) / $201,750 = -0.1078
+  R₃ = ($232,125 - $208,500) / $208,500 = 0.1133
   ```
+- Upcoming Cash Flow: -$22,125 (MSFT purchase)
 
 ### 4. AAPL Dividend (March 15, 2023)
-- Portfolio Value: $204,000
+- Portfolio Value: $234,000
 - Cash Flow: +$750
-- Sub-period Return: 0.0130 (1.30%)
+- Sub-period Return: +11.43%
   ```
-  R₄ = ($204,000 - $202,125) / $202,125 = 0.0130
+  R₄ = ($234,000 - $210,000) / $210,000 = 0.1143
   ```
+- Upcoming Cash Flow: +$750 (AAPL dividend)
 
 ### 5. Spending Fund Deposits (April 1, 2023)
-- Portfolio Value: $182,625
-- Cash Flow: -$15,000 (Growth Fund)
-- Sub-period Return: -0.0313 (-3.13%)
+- Growth Fund Deposit: $15,000
+  - Cash: $3,000 (20%)
+  - Invested: $12,000 (80%)
+- Income Fund Deposit: $7,500
+  - Cash: $3,000 (40%)
+  - Invested: $4,500 (60%)
+- Portfolio Value: $212,625
+- Sub-period Return: -9.42%
   ```
-  R₅ = ($182,625 - $204,000) / $204,000 = -0.0313
+  R₅ = ($212,625 - $234,750) / $234,750 = -0.0942
   ```
+- Upcoming Cash Flow: +$15,000 (Growth Fund deposit)
 
 ### 6. Additional Growth Fund Deposit (May 1, 2023)
-- Portfolio Value: $176,250
-- Cash Flow: -$7,500
-- Sub-period Return: 0.0062 (0.62%)
+- Growth Fund Deposit: $7,500
+  - Cash: $1,500 (20%)
+  - Invested: $6,000 (80%)
+- Portfolio Value: $206,250
+- Sub-period Return: -6.59%
   ```
-  R₆ = ($176,250 - $182,625) / $182,625 = 0.0062
+  R₆ = ($206,250 - $220,125) / $220,125 = -0.0659
   ```
+- Upcoming Cash Flow: +$7,500 (Growth Fund deposit)
 
 ### 7. AAPL Sale (June 15, 2023)
-- Portfolio Value: $176,400
+- Portfolio Value: $206,400
 - Cash Flow: +$5,250 (30 shares × $175)
-- Sub-period Return: 0.0306 (3.06%)
+- Sub-period Return: -3.44%
   ```
-  R₇ = ($176,400 - $176,250) / $176,250 = 0.0306
+  R₇ = ($206,400 - $213,750) / $213,750 = -0.0344
   ```
+- Upcoming Cash Flow: +$5,250 (AAPL sale)
 
 ### 8. Final Period (June 15 - December 31, 2023)
-- Final Portfolio Value: $177,375
-- Sub-period Return: 0.0055 (0.55%)
+- Final Portfolio Value: $207,375
+- Sub-period Return: -2.02%
   ```
-  R₈ = ($177,375 - $176,400) / $176,400 = 0.0055
+  R₈ = ($207,375 - $211,650) / $211,650 = -0.0202
   ```
 
 ## Final TWR Calculation
 ```
-TWR = [(1 + 0.7407) × (1 - 0.1185) × (1 - 0.1078) × (1 + 0.0130) × 
-       (1 - 0.0313) × (1 + 0.0062) × (1 + 0.0306) × (1 + 0.0055)] - 1
-TWR = 0.4584 or 45.84%
+TWR = [(1 + 0.0000) × (1 - 0.3941) × (1 + 0.1133) × (1 + 0.1143) × 
+       (1 - 0.0942) × (1 - 0.0659) × (1 - 0.0344) × (1 - 0.0202)] - 1
+TWR = -0.4363 or -43.63%
 ```
 
 ## Annualized Return
 ```
 Annualized Return = (1 + TWR)^(365/days) - 1
-                  = (1 + 0.4584)^(365/365) - 1
-                  = 0.4599 or 45.99%
+                  = (1 - 0.4363)^(365/365) - 1
+                  = -0.4371 or -43.71%
 ```
 
 ## Key Features of TWR
@@ -101,4 +138,26 @@ Annualized Return = (1 + TWR)^(365/days) - 1
 - Cash flows are properly handled by creating new sub-periods
 - Returns are calculated independently for each sub-period
 - The final TWR is calculated by geometrically linking all sub-period returns
-- The implementation follows industry standards and best practices 
+- The implementation follows industry standards and best practices
+- Spending fund rebalancing is triggered after each transaction
+- Rebalancing transactions are recorded in the fund's transaction history
+- Cash flows from rebalancing are included in the TWR calculation
+
+## Performance Analysis
+1. Portfolio Performance:
+   - Time-Weighted Return: -43.63%
+   - Annualized Return: -43.71%
+   - Significant underperformance due to:
+     - Large initial cash outflows
+     - Multiple spending fund deposits
+     - Negative returns in most sub-periods
+
+2. Individual Security Performance:
+   - AAPL: +20.00% return
+   - MSFT: +14.29% return
+   - Both underperformed S&P 500 (+24.23%)
+
+3. Spending Fund Status:
+   - Growth Fund: Maintained 20% cash allocation
+   - Income Fund: Maintained 40% cash allocation
+   - No rebalancing needed as allocations stayed within limits 
