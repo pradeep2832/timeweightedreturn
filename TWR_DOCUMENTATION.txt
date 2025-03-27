@@ -1,0 +1,104 @@
+# Time-Weighted Return (TWR) Calculation Documentation
+
+## Overview
+The Time-Weighted Return (TWR) is a measure of investment performance that eliminates the impact of cash flows. It's calculated by breaking down the investment period into sub-periods between cash flows and linking these sub-period returns geometrically.
+
+## Formula
+```
+TWR = [(1 + R₁) × (1 + R₂) × ... × (1 + Rₙ)] - 1
+```
+Where:
+- Rₙ is the return for each sub-period
+- Each sub-period return is calculated as: R = (End Value - Start Value) / Start Value
+
+## Detailed Steps from Our Example
+
+### 1. Initial Setup (January 1, 2023)
+- Initial Portfolio Value: $202,500
+- Initial Deposit: $150,000
+- First Sub-period Return: 0.7407 (74.07%)
+  ```
+  R₁ = ($202,500 - $202,500 + $150,000) / $202,500 = 0.7407
+  ```
+
+### 2. AAPL Purchase (January 15, 2023)
+- Portfolio Value: $201,750
+- Cash Flow: -$23,250 (150 shares × $155)
+- Sub-period Return: -0.1185 (-11.85%)
+  ```
+  R₂ = ($201,750 - $202,500) / $202,500 = -0.1185
+  ```
+
+### 3. MSFT Purchase (February 1, 2023)
+- Portfolio Value: $202,125
+- Cash Flow: -$22,125 (75 shares × $295)
+- Sub-period Return: -0.1078 (-10.78%)
+  ```
+  R₃ = ($202,125 - $201,750) / $201,750 = -0.1078
+  ```
+
+### 4. AAPL Dividend (March 15, 2023)
+- Portfolio Value: $204,000
+- Cash Flow: +$750
+- Sub-period Return: 0.0130 (1.30%)
+  ```
+  R₄ = ($204,000 - $202,125) / $202,125 = 0.0130
+  ```
+
+### 5. Spending Fund Deposits (April 1, 2023)
+- Portfolio Value: $182,625
+- Cash Flow: -$15,000 (Growth Fund)
+- Sub-period Return: -0.0313 (-3.13%)
+  ```
+  R₅ = ($182,625 - $204,000) / $204,000 = -0.0313
+  ```
+
+### 6. Additional Growth Fund Deposit (May 1, 2023)
+- Portfolio Value: $176,250
+- Cash Flow: -$7,500
+- Sub-period Return: 0.0062 (0.62%)
+  ```
+  R₆ = ($176,250 - $182,625) / $182,625 = 0.0062
+  ```
+
+### 7. AAPL Sale (June 15, 2023)
+- Portfolio Value: $176,400
+- Cash Flow: +$5,250 (30 shares × $175)
+- Sub-period Return: 0.0306 (3.06%)
+  ```
+  R₇ = ($176,400 - $176,250) / $176,250 = 0.0306
+  ```
+
+### 8. Final Period (June 15 - December 31, 2023)
+- Final Portfolio Value: $177,375
+- Sub-period Return: 0.0055 (0.55%)
+  ```
+  R₈ = ($177,375 - $176,400) / $176,400 = 0.0055
+  ```
+
+## Final TWR Calculation
+```
+TWR = [(1 + 0.7407) × (1 - 0.1185) × (1 - 0.1078) × (1 + 0.0130) × 
+       (1 - 0.0313) × (1 + 0.0062) × (1 + 0.0306) × (1 + 0.0055)] - 1
+TWR = 0.4584 or 45.84%
+```
+
+## Annualized Return
+```
+Annualized Return = (1 + TWR)^(365/days) - 1
+                  = (1 + 0.4584)^(365/365) - 1
+                  = 0.4599 or 45.99%
+```
+
+## Key Features of TWR
+1. Eliminates impact of cash flows on performance measurement
+2. Provides fair comparison between different portfolios
+3. Measures manager's performance independently of client decisions
+4. Follows Global Investment Performance Standards (GIPS)
+
+## Implementation Notes
+- The TWR calculation is implemented in the TimeWeightedReturnService class
+- Cash flows are properly handled by creating new sub-periods
+- Returns are calculated independently for each sub-period
+- The final TWR is calculated by geometrically linking all sub-period returns
+- The implementation follows industry standards and best practices 
